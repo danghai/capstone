@@ -426,6 +426,9 @@ clean:
 	rm -f $(PKGCFGF)
 	$(MAKE) -C cstool clean
 
+gcov:
+	gcov -r . --html -o coverage.html --html-details
+
 ifeq (,$(findstring yes,$(CAPSTONE_BUILD_CORE_ONLY)))
 	$(MAKE) -C tests clean
 	$(MAKE) -C suite/fuzz clean

@@ -2,6 +2,8 @@ language: cpp
 sudo: false
 before_install:
         - export LD_LIBRARY_PATH=`pwd`/tests/:$LD_LIBRARY_PATH
+install:
+        - gem install coveralls-lcov
 before_script:
         - wget https://github.com/groundx/capstonefuzz/raw/master/corpus/corpus-libFuzzer-capstone_fuzz_disasmnext-latest.zip
         - unzip -q corpus-libFuzzer-capstone_fuzz_disasmnext-latest.zip -d suite/fuzz
@@ -31,3 +33,11 @@ matrix:
           env: CXXFLAGS="-DFUZZING_BUILD_MODE_UNSAFE_FOR_PRODUCTION -fsanitize=undefined" CFLAGS="-DFUZZING_BUILD_MODE_UNSAFE_FOR_PRODUCTION -fsanitize=undefined -fno-sanitize-recover=undefined,integer" LDFLAGS="-fsanitize=undefined" NOPYTEST=true
           compiler: clang
           os: linux
+        - name: coverage
+          env: COVERAGE=yes CFLAGS="--coverage" LDFLAGS="--coverage" CONFIGURE_ARGS="--enable-debug"
+          compiler: clang
+          os: linux
+
+after_success:
+        - lcov --compat-libtool --directory . --capture --output-file coverage.info
+        - coveralls-lcov coverage.info
